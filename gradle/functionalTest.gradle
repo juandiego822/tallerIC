@@ -1,0 +1,25 @@
+ext.seleniumGroup = 'org.seleniumhq.selenium'
+ext.seleniumVersion = '2.32.0'
+
+dependencies {
+    testCompile "$seleniumGroup:selenium-api:$seleniumVersion"
+    testCompile "$seleniumGroup:selenium-firefox-driver:$seleniumVersion"
+}
+
+sourceSets {
+    functionalTest {
+        java.srcDir file('src/functTest/java')
+        resources.srcDir file('src/functTest/resources')
+        compileClasspath = sourceSets.main.output + configurations.testCompile
+        runtimeClasspath = output + compileClasspath + configurations.testRuntime
+    }
+}
+
+task functionalTest(type: Test) {
+    testClassesDir = sourceSets.functionalTest.output.classesDir
+    classpath = sourceSets.functionalTest.runtimeClasspath
+    reports.html.destination = file("$test.reports.html.destination/functional")
+    reports.junitXml.destination = file("$test.reports.junitXml.destination/functional")
+}
+
+check.dependsOn functionalTest
